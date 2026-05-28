@@ -16,7 +16,7 @@ Um sistema web desenvolvido em Django para cadastrar, gerenciar e dar visibilida
 
 - **Backend:** Python 3.12, Django 5.x
 - **Frontend:** HTML5, CSS3, Bootstrap 5.3.3, Google Fonts (Outfit)
-- **Banco de Dados:** SQLite (padrão em ambiente de desenvolvimento)
+- **Banco de Dados:** POSTGRESQL (padrão em ambiente de desenvolvimento)
 - **Bibliotecas auxiliares:** Pillow (processamento de imagens)
 
 ## ⚙️ Como executar o projeto localmente
