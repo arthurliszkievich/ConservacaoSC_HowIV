@@ -143,4 +143,17 @@ def detalhes(request, unidade_id):
 
 def comunicacao(request, unidade_id):
     unidade = get_object_or_404(UnidadeConservacao, id=unidade_id)
-    return render(request, 'unidades/comunicacao.html', {'unidade': unidade})
+    
+    if request.method == 'POST':
+        form = ComunicacaoForm(request.POST)
+        if form.is_valid():
+            nova_comunicacao = form.save(commit=False)
+            nova_comunicacao.unidade = unidade
+            nova_comunicacao.status = 0 # 0 = "em análise"
+            nova_comunicacao.save()
+            messages.success(request, 'Comunicação enviada com sucesso!')
+            return redirect('detalhes', unidade_id=unidade.id)
+    else:
+        form = ComunicacaoForm()
+        
+    return render(request, 'unidades/comunicacao.html', {'unidade': unidade, 'form': form})

@@ -44,21 +44,21 @@ class UnidadeConservacao(models.Model):
 
 class Comunicacao(models.Model):
     STATUS_CHOICES = [
-        (1, 'Pendente'),
-        (2, 'Em Andamento'),
-        (3, 'Resolvido'),
+        (0, 'Em análise'),
+        (1, 'Analisada'),
     ]
     
     unidade = models.ForeignKey(UnidadeConservacao, on_delete=models.CASCADE, related_name='comunicacoes')
     titulo = models.CharField(max_length=200, verbose_name="Título")
     descricao = models.TextField(verbose_name="Descrição")
     email = models.CharField(max_length=150, verbose_name="Email")
-    status = models.SmallIntegerField(choices=STATUS_CHOICES, default=1, verbose_name="Status")
+    status = models.SmallIntegerField(choices=STATUS_CHOICES, default=0, verbose_name="Status")
     data_envio = models.DateTimeField(auto_now_add=True, verbose_name="Data de Envio")
 
     class Meta:
         verbose_name = "Comunicação"
         verbose_name_plural = "Comunicações"
+        ordering = ['-data_envio']
 
     def __str__(self):
         return f"{self.titulo} - {self.unidade.nome}"

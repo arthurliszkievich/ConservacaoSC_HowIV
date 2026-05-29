@@ -1,64 +1,48 @@
 <!DOCTYPE html>
 <html lang="pt-br">
-
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nova Comunicação</title>
-
+  <title>Nova Comunicação – {{ unidade.nome }}</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="css/style.css">
 </head>
-
 <body>
 
   <nav class="navbar navbar-expand-lg navbar-dark bg-success">
     <div class="container">
-      <a class="navbar-brand fw-bold" href="index.html">
-        Conservação SC
-      </a>
+      <a class="navbar-brand fw-bold" href="{% url 'index' %}">🌿 Conservação SC</a>
+      <div class="ms-auto">
+        <a href="{% url 'detalhes' unidade.id %}" class="btn btn-outline-light btn-sm">← Voltar para Detalhes</a>
+      </div>
     </div>
   </nav>
 
   <section class="container my-5">
-
     <div class="row justify-content-center">
-      <div class="col-lg-8">
+      <div class="col-lg-6">
 
-        <div class="card shadow-sm p-4">
+        <h2 class="mb-2 fw-bold">Enviar Comunicação</h2>
+        <p class="text-muted mb-4">Referente a: <strong>{{ unidade.nome }}</strong></p>
 
-          <h2 class="mb-4">Enviar Comunicação</h2>
-
-          <form>
-
-            <div class="mb-3">
-              <label class="form-label">Título</label>
-              <input type="text" class="form-control">
-            </div>
-
-            <div class="mb-3">
-              <label class="form-label">Descrição</label>
-              <textarea class="form-control" rows="5"></textarea>
-            </div>
-
-            <div class="mb-3">
-              <label class="form-label">E-mail</label>
-              <input type="email" class="form-control">
-            </div>
-
-            <button class="btn btn-success w-100">
-              Enviar Comunicação
-            </button>
-
+        <div class="card shadow-sm border-0 rounded-4 p-4">
+          <form method="POST">
+            {% csrf_token %}
+            {% for field in form %}
+              <div class="mb-3">
+                <label class="form-label fw-semibold">{{ field.label }}</label>
+                {{ field }}
+                {% for error in field.errors %}
+                  <div class="text-danger small">⚠ {{ error }}</div>
+                {% endfor %}
+              </div>
+            {% endfor %}
+            <button type="submit" class="btn btn-success w-100 fw-bold mt-2">Enviar Comunicação</button>
           </form>
-
         </div>
 
       </div>
     </div>
-
   </section>
 
 </body>
-
 </html>
