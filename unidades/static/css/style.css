@@ -602,6 +602,40 @@ body {
 
 .btn-confirm:hover { background: var(--green-mid); }
 
+/* ===== USER BADGE ===== */
+.user-menu-item {
+  display: flex;
+  align-items: center;
+  margin-left: 20px;
+  border-left: 1px solid rgba(255, 255, 255, 0.25);
+  padding-left: 20px;
+}
+.user-badge {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  margin-right: 8px;
+  text-decoration: none;
+  transition: var(--transition);
+  cursor: pointer;
+}
+.user-badge:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+.user-badge .user-icon {
+  font-size: 0.95rem;
+}
+.user-badge .user-name {
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
 /* ===== LOGIN / REGISTRO ===== */
 .auth-page {
   min-height: 100vh;

@@ -88,10 +88,11 @@
       <ul class="nav-links">
         <li><a href="{% url 'index' %}" id="nav-inicio">Início</a></li>
         <li><a href="{% url 'painel' %}" class="active" id="nav-painel">Meu Painel</a></li>
-        <li>
-          <span style="color:rgba(255,255,255,.7);font-size:.88rem;">
-            Olá, <strong style="color:#fff;">{{ request.user.username }}</strong>
-          </span>
+        <li class="user-menu-item">
+          <a href="{% url 'painel' %}" class="user-badge">
+            <span class="user-icon">👤</span>
+            <span class="user-name">Olá, {{ request.user.username }}</span>
+          </a>
         </li>
         <li><a href="{% url 'logout' %}" class="btn-login" id="nav-sair">Sair</a></li>
       </ul>

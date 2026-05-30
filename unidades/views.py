@@ -135,9 +135,10 @@ def novo_municipio_view(request):
 
 def index(request):
     from .models import Municipio
-    unidades = UnidadeConservacao.objects.all()
+    todas_unidades = UnidadeConservacao.objects.all().order_by('nome')
+    unidades = todas_unidades
     
-    # Pesquisa por nome
+    # Pesquisa por nome (busca texto livre)
     q = request.GET.get('q', '').strip()
     if q:
         unidades = unidades.filter(nome__icontains=q)
@@ -147,12 +148,19 @@ def index(request):
     if municipio_id:
         unidades = unidades.filter(municipios__id=municipio_id)
 
-    municipios = Municipio.objects.all()
+    # Filtro por unidade específica
+    unidade_id = request.GET.get('unidade', '')
+    if unidade_id:
+        unidades = unidades.filter(id=unidade_id)
+
+    municipios = Municipio.objects.all().order_by('nome')
     return render(request, 'unidades/index.html', {
         'unidades': unidades,
+        'todas_unidades': todas_unidades,
         'municipios': municipios,
         'q': q,
         'municipio_selecionado': municipio_id,
+        'unidade_selecionada': unidade_id,
     })
 
 def detalhes(request, unidade_id):
