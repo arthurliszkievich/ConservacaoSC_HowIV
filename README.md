@@ -10,7 +10,7 @@ Um sistema web desenvolvido em Django para cadastrar, gerenciar e dar visibilida
 - **Gerenciamento de UCs:** Usuários logados podem criar, editar e excluir Unidades de Conservação, Instituições e Municípios.
 - **Upload de Mídia:** Suporte a upload de imagens para as Unidades de Conservação (configurado via Pillow).
 - **Interface Pública:** Vitrine de parques cadastrados e páginas de detalhes dinâmicas.
-- **Comunicações:** Sistema de formulários públicos onde visitantes podem enviar avisos (Pendente, Em Andamento, Resolvido) sobre as unidades (ex: denúncia ambiental, dúvida, aviso de incêndio).
+- **Comunicações:** Qualquer indivíduo tem a possibilidade de enviar uma comunicação às autoridades responsáveis. A entidade armazena título, descrição detalhada, data/hora de envio, e-mail do comunicante, unidade de referência (relacionamento 1-N) e o Status (0 - "em análise", 1 - "analisada").
 
 ## 🛠 Tecnologias Utilizadas
 

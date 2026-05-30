@@ -28,7 +28,8 @@ class UnidadeConservacao(models.Model):
     nome = models.CharField(max_length=200, verbose_name="Nome da Unidade")
     descricao = models.TextField(verbose_name="Descrição", blank=True, null=True)
     imagem = models.ImageField(upload_to='unidades/', blank=True, null=True, verbose_name="Imagem")
-    data_criacao = models.DateField(auto_now_add=True, verbose_name="Data de Criação")
+    data_criacao = models.DateField(blank=True, null=True, verbose_name="Data de Criação")
+    area = models.CharField(max_length=100, blank=True, null=True, verbose_name="Área (hectares)")
     criado_por = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, 
         related_name='unidades_criadas', 

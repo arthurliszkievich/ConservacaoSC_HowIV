@@ -134,26 +134,43 @@ def novo_municipio_view(request):
 # ==========================================
 
 def index(request):
+    from .models import Municipio
     unidades = UnidadeConservacao.objects.all()
-    return render(request, 'unidades/index.html', {'unidades': unidades})
+    
+    # Pesquisa por nome
+    q = request.GET.get('q', '').strip()
+    if q:
+        unidades = unidades.filter(nome__icontains=q)
+    
+    # Filtro por município
+    municipio_id = request.GET.get('municipio', '')
+    if municipio_id:
+        unidades = unidades.filter(municipios__id=municipio_id)
+
+    municipios = Municipio.objects.all()
+    return render(request, 'unidades/index.html', {
+        'unidades': unidades,
+        'municipios': municipios,
+        'q': q,
+        'municipio_selecionado': municipio_id,
+    })
 
 def detalhes(request, unidade_id):
     unidade = get_object_or_404(UnidadeConservacao, id=unidade_id)
-    return render(request, 'unidades/detalhes.html', {'unidade': unidade})
+    form = ComunicacaoForm()
 
-def comunicacao(request, unidade_id):
-    unidade = get_object_or_404(UnidadeConservacao, id=unidade_id)
-    
     if request.method == 'POST':
         form = ComunicacaoForm(request.POST)
         if form.is_valid():
             nova_comunicacao = form.save(commit=False)
             nova_comunicacao.unidade = unidade
-            nova_comunicacao.status = 0 # 0 = "em análise"
+            nova_comunicacao.status = 0
             nova_comunicacao.save()
             messages.success(request, 'Comunicação enviada com sucesso!')
             return redirect('detalhes', unidade_id=unidade.id)
-    else:
-        form = ComunicacaoForm()
-        
-    return render(request, 'unidades/comunicacao.html', {'unidade': unidade, 'form': form})
+
+    return render(request, 'unidades/detalhes.html', {'unidade': unidade, 'form': form})
+
+def comunicacao(request, unidade_id):
+    """Mantida por compatibilidade – redireciona para detalhes"""
+    return redirect('detalhes', unidade_id=unidade_id)

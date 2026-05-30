@@ -6,12 +6,14 @@ class UnidadeConservacaoForm(forms.ModelForm):
     """Formulário para criar e editar UC"""
     class Meta:
         model = UnidadeConservacao
-        fields = ['nome', 'descricao', 'instituicao', 'municipios', 'imagem']
+        fields = ['nome', 'descricao', 'instituicao', 'municipios', 'imagem', 'data_criacao', 'area']
         widgets = {
             'nome': forms.TextInput(attrs={'class': 'form-control'}),
             'descricao': forms.Textarea(attrs={'class': 'form-control', 'rows': 4}),
             'instituicao': forms.Select(attrs={'class': 'form-control'}),
             'municipios': forms.SelectMultiple(attrs={'class': 'form-control'}),
+            'data_criacao': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
+            'area': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ex: 6.667 hectares'}),
         }
 
 class ComunicacaoForm(forms.ModelForm):

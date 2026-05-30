@@ -1,57 +1,189 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="pt-br">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="{{ unidade.nome }} – Portal de Unidades de Conservação de Santa Catarina">
   <title>{{ unidade.nome }} – Conservação SC</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
 
-  <nav class="navbar navbar-expand-lg navbar-dark bg-success">
-    <div class="container">
-      <a class="navbar-brand fw-bold" href="{% url 'index' %}">🌿 Conservação SC</a>
+  <!-- ===== NAVBAR ===== -->
+  <nav class="portal-navbar">
+    <div class="navbar-container">
+      <a href="{% url 'index' %}" class="brand-block">
+        <img src="{% static 'img/bandeira_sc.png' %}" alt="Bandeira de Santa Catarina" class="brand-logo">
+        <div class="brand-text-group">
+          <span class="brand-title">Portal de Unidades de Conservação</span>
+          <span class="brand-subtitle">Santa Catarina</span>
+        </div>
+      </a>
+
+      <ul class="nav-links">
+        <li><a href="{% url 'index' %}" id="nav-inicio">Início</a></li>
+        <li><a href="{% url 'index' %}" class="active" id="nav-unidades">Unidades</a></li>
+        {% if request.user.is_authenticated %}
+          <li><a href="{% url 'painel' %}" id="nav-painel">Meu Painel</a></li>
+          <li><a href="{% url 'logout' %}" class="btn-login" id="nav-sair">Sair</a></li>
+        {% else %}
+          <li><a href="{% url 'login' %}" class="btn-login" id="nav-login">Login</a></li>
+        {% endif %}
+      </ul>
     </div>
   </nav>
 
-  <section class="container my-5">
-    <h2 class="fw-bold mb-3">{{ unidade.nome }}</h2>
-    <p class="lead">{{ unidade.descricao }}</p>
-    <p><strong>Instituição Responsável:</strong> {{ unidade.instituicao.nome }}</p>
-
-    <hr class="my-5">
-
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h3>Comunicações</h3>
-      <a href="{% url 'comunicacao' unidade.id %}" class="btn btn-success">Nova Comunicação</a>
+  <!-- ===== HERO IMAGE ===== -->
+  <div class="detail-hero" id="detail-hero">
+    {% if unidade.imagem %}
+      <img src="{{ unidade.imagem.url }}" alt="{{ unidade.nome }}">
+    {% else %}
+      <img src="https://picsum.photos/seed/{{ unidade.id }}hero/1400/400" alt="{{ unidade.nome }}">
+    {% endif %}
+    <div class="hero-title">
+      <h1>{{ unidade.nome }}</h1>
     </div>
-    
+  </div>
+
+  <!-- ===== DETAIL CONTENT ===== -->
+  <div class="detail-container">
+
+    <!-- ===== MESSAGES ===== -->
     {% if messages %}
       {% for message in messages %}
-        <div class="alert alert-success">{{ message }}</div>
+        <div class="alert-success-bar">{{ message }}</div>
       {% endfor %}
     {% endif %}
 
-    {% for com in unidade.comunicacoes.all %}
-    <div class="card shadow-sm mb-3 border-0 rounded-3">
-      <div class="card-body">
-        <div class="d-flex justify-content-between">
-          <h5 class="fw-bold text-success">{{ com.titulo }}</h5>
-          <span class="badge {% if com.status == 0 %}bg-warning text-dark{% else %}bg-success{% endif %}">
-            {{ com.get_status_display }}
-          </span>
+    <!-- ===== INFO BOX ===== -->
+    <div class="info-box">
+      <div class="info-left">
+        {% if unidade.data_criacao %}
+        <div class="info-row">
+          <strong>Data de Criação:</strong>
+          {{ unidade.data_criacao|date:"d/m/Y" }}
         </div>
-        <p class="text-muted small mb-2">{{ com.data_envio|date:"d/m/Y H:i" }} | Por: {{ com.email }}</p>
-        <p class="mb-0">{{ com.descricao }}</p>
+        {% endif %}
+        {% if unidade.area %}
+        <div class="info-row">
+          <strong>Área:</strong>
+          {{ unidade.area }}
+        </div>
+        {% endif %}
+        <div class="info-row">
+          <strong>Municípios abrangidos:</strong>
+          {% for municipio in unidade.municipios.all %}
+            {{ municipio.nome }}{% if not forloop.last %} e {% endif %}
+          {% empty %}
+            Não informado
+          {% endfor %}
+        </div>
+      </div>
+      <div class="info-right">
+        {{ unidade.descricao }}
       </div>
     </div>
+
+    <!-- ===== COMMUNICATIONS ===== -->
+    <div class="comm-section-header">
+      <h2>Histórico de Comunicações</h2>
+      <button class="btn-nova-comm" id="btn-abrir-modal" onclick="document.getElementById('modal-comunicacao').classList.add('open')">
+        Nova Comunicação
+      </button>
+    </div>
+
+    {% for com in unidade.comunicacoes.all %}
+    <div class="comm-item" id="comm-{{ com.id }}">
+      <div class="comm-title-row">
+        <h3 class="comm-title">{{ com.titulo }}</h3>
+        <span class="comm-date">{{ com.data_envio|date:"d/m/Y H:i:s" }}</span>
+      </div>
+      <p class="comm-desc">{{ com.descricao }}</p>
+      {% if com.status == 0 %}
+        <span class="badge-status badge-em-analise">0 - Em análise</span>
+      {% else %}
+        <span class="badge-status badge-analisada">1 - Analisada</span>
+      {% endif %}
+    </div>
     {% empty %}
-    <div class="text-center py-4">
-      <p class="text-muted">Nenhuma comunicação enviada para esta unidade ainda.</p>
+    <div class="empty-state">
+      <p>Nenhuma comunicação enviada para esta unidade ainda.</p>
     </div>
     {% endfor %}
 
-  </section>
+  </div><!-- /detail-container -->
+
+  <!-- ===== MODAL NOVA COMUNICAÇÃO ===== -->
+  <div class="modal-overlay" id="modal-comunicacao">
+    <div class="modal-box" id="modal-box">
+      <h2>Nova Comunicação: {{ unidade.nome }}</h2>
+
+      <form method="POST" action="{% url 'detalhes' unidade.id %}" id="form-comunicacao">
+        {% csrf_token %}
+
+        <div class="form-group" style="margin-bottom:14px;">
+          <label class="form-label" for="id_email">E-mail</label>
+          <input type="email" name="email" id="id_email" class="form-control"
+                 value="{{ form.email.value|default:'' }}"
+                 {% if form.email.errors %}style="border-color:#dc2626;"{% endif %}>
+          {% for error in form.email.errors %}
+            <div style="color:#dc2626;font-size:.78rem;margin-top:4px;">{{ error }}</div>
+          {% endfor %}
+        </div>
+
+        <div class="form-group" style="margin-bottom:14px;">
+          <label class="form-label" for="id_titulo">Título</label>
+          <input type="text" name="titulo" id="id_titulo" class="form-control"
+                 value="{{ form.titulo.value|default:'' }}"
+                 {% if form.titulo.errors %}style="border-color:#dc2626;"{% endif %}>
+          {% for error in form.titulo.errors %}
+            <div style="color:#dc2626;font-size:.78rem;margin-top:4px;">{{ error }}</div>
+          {% endfor %}
+        </div>
+
+        <div class="form-group" style="margin-bottom:14px;">
+          <label class="form-label" for="id_descricao">Descrição Detalhada</label>
+          <textarea name="descricao" id="id_descricao" class="form-control"
+                    {% if form.descricao.errors %}style="border-color:#dc2626;"{% endif %}>{{ form.descricao.value|default:'' }}</textarea>
+          {% for error in form.descricao.errors %}
+            <div style="color:#dc2626;font-size:.78rem;margin-top:4px;">{{ error }}</div>
+          {% endfor %}
+        </div>
+
+        <div class="modal-actions">
+          <button type="button" class="btn-cancel" id="btn-cancelar"
+                  onclick="document.getElementById('modal-comunicacao').classList.remove('open')">
+            Cancelar
+          </button>
+          <button type="submit" class="btn-confirm" id="btn-confirmar">Confirmar</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    // Abre modal automaticamente se houver erros de validação
+    {% if form.errors %}
+      document.getElementById('modal-comunicacao').classList.add('open');
+    {% endif %}
+
+    // Fecha modal clicando fora
+    document.getElementById('modal-comunicacao').addEventListener('click', function(e) {
+      if (e.target === this) {
+        this.classList.remove('open');
+      }
+    });
+
+    // Fecha modal com Escape
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'Escape') {
+        document.getElementById('modal-comunicacao').classList.remove('open');
+      }
+    });
+  </script>
 
 </body>
 </html>
